@@ -1,0 +1,20 @@
+PODS:
+  - Expecta (0.3.2)
+  - GeneticsKit (0.1.0)
+  - Specta (0.4.0)
+
+DEPENDENCIES:
+  - Expecta
+  - GeneticsKit (from `../`)
+  - Specta
+
+EXTERNAL SOURCES:
+  GeneticsKit:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Expecta: ee641011fe10aa1855d487b40e4976dac50ec342
+  GeneticsKit: 29f0dc087df93fac00f23c2a781b5df097fca56d
+  Specta: 1df326d6ec48603c77f507a0ab1f89ad2df1c582
+
+COCOAPODS: 0.35.0
