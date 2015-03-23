@@ -48,14 +48,14 @@ typedef NS_OPTIONS(NSInteger, GNKLabOptions)
  *  3. If the retrieved value was `[NSNull null]`, it is converted into `nil`.
  *  4. The retrieved value is set on the receiver object using the [GNKGene receivingTrait].
  *
- *  Note that almost every step in the default flow can be altered using the various GNKLabOptions which can be bitmasked together.
+ *  Virtually every step in the default flow can be altered using the various GNKLabOptions which can be bitmasked together.
  *
  *  @param source   The source object which will provide trait values. Depending on the genome provided, some of these values may be transformed. This must not be nil.
  *  @param receiver The receiving object which will have values set on it. This must not be nil.
  *  @param genome   An array of GNKGene objects to follow for retrieving and setting values from the source to the receiver. This must contain at least one gene.
  *  @param options  A bitmask of options to use when transfering traits.
  */
-OBJC_EXPORT void GNKLabTransferTraits(id source, id receiver, NSArray *genome, GNKLabOptions options);
+FOUNDATION_EXPORT void GNKLabTransferTraits(id source, id receiver, NSArray *genome, GNKLabOptions options);
 
 /**
  *  Function which compares trait values between objects and finds the genes which do not share common values.
@@ -76,4 +76,4 @@ OBJC_EXPORT void GNKLabTransferTraits(id source, id receiver, NSArray *genome, G
  *
  *  @return A set of GNKGene objects which have traits that did not represent equivalent values between the source and receiver.
  */
-OBJC_EXPORT NSSet *GNKLabGenesWithDifferentTraits(id source, id receiver, NSArray *genome, GNKLabOptions options);
+FOUNDATION_EXPORT NSSet *GNKLabGenesWithDifferentTraits(id source, id receiver, NSArray *genome, GNKLabOptions options);

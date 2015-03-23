@@ -9,6 +9,12 @@
 #import <XCTest/XCTest.h>
 #import <GeneticsKit/GeneticsKit.h>
 
+@interface GNKTestOneWayTransformer : NSValueTransformer
+@end
+
+@interface GNKTestReversibleTransformer : NSValueTransformer
+@end
+
 @interface GNKGeneTests : XCTestCase
 
 @end
@@ -30,6 +36,48 @@
     XCTAssertEqualObjects(geneA, geneB);
     XCTAssertFalse([geneA isEqual:geneC]);
     XCTAssertFalse([geneA isEqualToGene:geneC]);
+}
+
+- (void)testCanInvertGene
+{
+    GNKGene *gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:nil];
+    
+    XCTAssertTrue([gene canInvertGene]);
+    
+    gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:[GNKTestReversibleTransformer new]];
+    
+    XCTAssertTrue([gene canInvertGene]);
+    
+    gene = [[GNKGene alloc] initWithSourceTrait:GNKIdentityTrait() receivingTrait:GNKKeyTrait(@"A") transformer:nil];
+    
+    XCTAssertFalse([gene canInvertGene]);
+    
+    gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:[GNKTestOneWayTransformer new]];
+    
+    XCTAssertFalse([gene canInvertGene]);
+}
+
+- (void)testInvertedGene
+{
+    GNKGene *geneA = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:[GNKTestReversibleTransformer new]];
+    
+    NSDictionary *sourceA = @{@"A": @"http://www.google.com"};
+    NSMutableDictionary *receiverA = [NSMutableDictionary dictionary];
+    
+    GNKLabTransferTraits(sourceA, receiverA, @[geneA], 0);
+    
+    NSDictionary *sourceB = @{@"A'": [NSURL URLWithString:@"http://www.google.com"]};
+    XCTAssertEqualObjects(receiverA, sourceB);
+    
+    GNKGene *geneB = [geneA invertedGene];
+    
+    XCTAssertNotNil(geneB);
+    
+    NSMutableDictionary *receiverB = [NSMutableDictionary dictionary];
+    
+    GNKLabTransferTraits(sourceB, receiverB, @[geneB], 0);
+    
+    XCTAssertEqualObjects(receiverB, sourceA);
 }
 
 
@@ -94,6 +142,40 @@
     
     XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"key"));
     XCTAssertEqualObjects(gene.receivingTrait, GNKIndexTrait(9));
+}
+
+@end
+
+
+@implementation GNKTestOneWayTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return NO;
+}
+
+- (id)transformedValue:(id)value
+{
+    return [value uppercaseString];
+}
+
+@end
+
+@implementation GNKTestReversibleTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return YES;
+}
+
+- (id)transformedValue:(id)value
+{
+    return [NSURL URLWithString:value];
+}
+
+- (id)reverseTransformedValue:(id)value
+{
+    return [value absoluteString];
 }
 
 @end

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  Protocol which conformers adopt to indicate that they can get a specific trait value from an arbitrary object. Note that conformers of this protocol must also conform to NSCopying.
+ *  Protocol which conformers adopt to indicate that they can get a specific trait value from an arbitrary object. Note that conformers of this protocol must also conform to NSCopying. Traits should also have meaningful -isEqual: methods.
  *
  *  See GNKIndexTrait, GNKKeyTrait, GNKSequenceTrait, GNKAggregateTrait, and GNKIdentity trait for examples of conformers.
  */

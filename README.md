@@ -37,7 +37,7 @@ A genome is just an array of `GNKGene` objects. A gene represents the mapping of
 							GNKMakeGene(@selector(lastName), @"last_name"),
 							GNKMakeGene(@selector(avatarURL), @"avatars[0]", [URLTransformer new])];
 
-And we're done! The `GNKMakeGene` macro is pretty smart and can take selectors and convert them into strings. No more having to type `NSStringFromSelector(@selector(...))` just to add some compile-time safety. Also, note that for the `avatarURL`, we provided a value transformer to convert the JSON URL strings to NSURL objects.
+And we're done! `GNKGene` objects are initialized with a `GNKSourceTrait`, a `GNKReceivingTrait`, and an optional `NSValueTransformer`. The `GNKMakeGene` macro simplifies this by allowing you to provide one to three arguments and will attempt to convert them to the correct type. It's pretty smart and can take selectors and primitive numbers. No more having to type `NSStringFromSelector(@selector(...))` just to add some compile-time safety.
 
 ### Transfer traits
 
@@ -62,7 +62,7 @@ Now let's say we got some new JSON from our server:
 		"first_name": "Harry",
 		"last_name": "Porker",
 		avatars: [...]
-}
+	}
 
 For whatever reason, we only want to have one person instance, and only update it when we need to. We can easily find out whether the JSON has different values from our instance using our genome:
 
@@ -73,7 +73,33 @@ For whatever reason, we only want to have one person instance, and only update i
 	differentGenes.count; // 1
 	differentGenes.anyObject; // "<GNKGene:...> firstName ==> first_name"
 
-Now we know that only the `firstName` needs to be updated. In fact, we can just convert the different genes into an array and use that as a new genome!
+Now we know that only the `firstName` needs to be updated. In fact, we can just convert the 
+different genes into an array and use that as a new genome!
+
+### Available traits and trait-convertibles
+
+The driving force behind GeneticsKit are two protocols: `GNKSourceTrait` and `GNKReceivngTrait`. These two protocols make up the designated initializer for `GNKGene`. To mask some of the implementation drudgery, GeneticsKit provides a bunch of functions to quickly make conforming trait objects.
+
+Function | Protocol | Description
+- | - | -
+`GNKKeyTrait(key)` | `GNKReceivingTrait` | Uses key-value coding to get and set trait values
+`GNKIndexTrait(index)` | `GNKReceivingTrait` | Uses index accessors to get and set trait values
+`GNKSequenceTrait(traits)` | `GNKReceivingTrait` | Iterates each of the sub-traits in sequence to get a trait value, and does the same for setting trait values.
+`GNKAggregateTrait(traits)` | `GNKSourceTrait` | Gets multiple trait values and aggregates them into a dictionary with the traits as keys.
+`GNKIdentityTrait()` | `GNKSourceTrait` | Simple trait which returns the given object as its trait value.
+
+Additionally, some Foundation classes have been extended to conform to the `GNKSourceTraitConvertible` and `GNKReceivingTraitConvertible` protocols.
+
+Foundation class | Protocols | Description
+- | - | -
+`NSString` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the string into either a single `GNKKeyTrait` or a `GNKSequenceTrait`.
+`NSNumber` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the number into a `GNKIndexTrait`.
+`NSIndexPath` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the index path into a `GNKSequenceTrait` of `GNKIndexTrait` objects.
+`NSArray` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the array into a `GNKSequenceTrait`.
+`NSOrderedSet` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the ordered set to a `GNKSequenceTrait`
+`NSIndexSet` | `GNKSourceTraitConvertible` | Converts the index set into a `GNKAggregateTrait` of `GNKIndexTrait` objects.
+`NSSet` | `GNKSourceTraitConvertible` | Converts the set into a `GNKAggregateTrait`.
+`NSNull` | `GNKSourceTraitConvertible` | Equivalent to `GNKIdentityTrait`.
 
 ## Why to all
 

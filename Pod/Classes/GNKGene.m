@@ -9,6 +9,16 @@
 #import "GNKGene.h"
 #import "GNKTrait.h"
 
+
+@interface _GNKInvertedTransformer : NSValueTransformer
+
+- (instancetype)initWithValueTransformer:(NSValueTransformer *)transformer;
+
+@property (strong, nonatomic) NSValueTransformer *transformer;
+
+@end
+
+
 @implementation GNKGene
 
 #pragma mark - API
@@ -50,34 +60,22 @@
     return equalSourceTraits && equalReceivingTraits && equalTransformers;
 }
 
-- (id)sourceValueFromObject:(id)object
+- (BOOL)canInvertGene
 {
-    id value = [self.sourceTrait traitValueFromObject:object];
-    if (!value || !self.transformer)
-    {
-        return value;
-    }
-    
-    if (value == [NSNull null])
-    {
-        value = nil;
-    }
-    
-    value = [self.transformer transformedValue:value];
-    
-    if (!value)
-    {
-        value = [NSNull null];
-    }
-    
-    return value;
+    return [self.sourceTrait conformsToProtocol:@protocol(GNKReceivingTrait)] &&
+           (!self.transformer || [[self.transformer class] allowsReverseTransformation]);
 }
 
-- (id)receivingValueFromObject:(id)object
+- (instancetype)invertedGene
 {
-    return [self.receivingTrait traitValueFromObject:object];
+    if (![self canInvertGene])
+    {
+        return nil;
+    }
+    
+    NSValueTransformer *transformer = (self.transformer) ? [[_GNKInvertedTransformer alloc] initWithValueTransformer:self.transformer] : nil;
+    return [[[self class] alloc] initWithSourceTrait:self.receivingTrait receivingTrait:self.sourceTrait transformer:transformer];
 }
-
 
 #pragma mark - NSObject
 
@@ -123,6 +121,41 @@
 
 
 #pragma mark - Private
+
+
+@implementation _GNKInvertedTransformer
+
++ (BOOL)allowsReverseTransformation
+{
+    return YES;
+}
+
+- (instancetype)initWithValueTransformer:(NSValueTransformer *)transformer
+{
+    NSParameterAssert(transformer);
+    NSParameterAssert([[transformer class] allowsReverseTransformation]);
+    
+    if (!(self = [super init]))
+    {
+        return nil;
+    }
+    
+    _transformer = transformer;
+    
+    return self;
+}
+
+- (id)transformedValue:(id)value
+{
+    return [self.transformer reverseTransformedValue:value];
+}
+
+- (id)reverseTransformedValue:(id)value
+{
+    return [self.transformer transformedValue:value];
+}
+
+@end
 
 void GNKPopulateGeneArgs(id arg, id __autoreleasing *sourceTrait, id __autoreleasing *receivingTrait, NSValueTransformer *__autoreleasing *transformer)
 {

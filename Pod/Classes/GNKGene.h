@@ -10,29 +10,31 @@
 
 @protocol GNKSourceTrait, GNKReceivingTrait;
 
+
 #define GNKMakeGene(...) GNK_DISPATCHER(GNK_GENE_, __VA_ARGS__) (__VA_ARGS__)
 
 /**
  *  A GNKGene represents the mapping of one trait to another. In this sense, a gene signifies that two traits are equivalent, though perhaps interacting with different objects. Values are transfered using the gene from the source trait to the receiver trait. If a transformer is provided, it will be used on the value returned by the source trait before being set using the receiving trait.
  *
- *  Typically, GNKGene instances are initialized using the convenience macro GNKMakeGene(...), which accepts from 1 to 3 arguments. These arguments are processed and used to populate the parameters of GNKGene -initWithSourceTrait:receivingTrait:transformer: based on the argument type. Acceptable arguemnt types include objects, selectors, and primitive numbers. Selectors are converted into NSString instances and primitive numbers to NSNumber instances.
+ *  Typically, GNKGene instances are initialized using the convenience macro `GNKMakeGene(...)`, which accepts from 1 to 3 arguments. These arguments are processed and used to populate the parameters of GNKGene -initWithSourceTrait:receivingTrait:transformer: based on the argument type. Acceptable arguemnt types include objects, selectors, and primitive numbers. Selectors are converted into NSString instances and primitive numbers to NSNumber instances.
  *
  *  Some examples:
+ *  
+ *  ```
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKKeyTrait(@"keyA") transformer:nil];
+ *  GNKGene *gene = GNKMakeGene(@selector(keyA));
  *
- *      // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKKeyTrait(@"keyA") transformer:nil];
- *      GNKGene *gene = GNKMakeGene(@selector(keyA));
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKIndexTrait(0) transformer:nil];
+ *  gene = GNKMakeGene(@"keyA", 0);
  *
- *      // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKIndexTrait(0) transformer:nil];
- *      gene = GNKMakeGene(@"keyA", 0);
+ *  NSValueTransformer *transformer = ...;
  *
- *      NSValueTransformer *transformer = ...;
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKIndexTrait(0) transformer:transformer];
+ *  gene = GNKMakeGene(@"keyA", @0, transformer);
  *
- *      // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKIndexTrait(0) transformer:transformer];
- *      gene = GNKMakeGene(@"keyA", @0, transformer);
- *
- *      // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKKeyTrait(@"keyA") transformer:transformer];
- *      gene = GNKMakeGene(@selector(keyA), transformer);
- *
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKKeyTrait(@"keyA") transformer:transformer];
+ *  gene = GNKMakeGene(@selector(keyA), transformer);
+ *  ```
  */
 @interface GNKGene : NSObject <NSCopying>
 
@@ -72,6 +74,26 @@
  *  @return YES if the genes have equivalent properties. NO if they do not.
  */
 - (BOOL)isEqualToGene:(GNKGene *)gene;
+
+/**
+ *  Checks if the receiver can be inverted.
+ *
+ *  @see invertedGene
+ *
+ *  @return YES if the receiver can be inverted, NO if it cannot be.
+ */
+- (BOOL)canInvertGene;
+
+/**
+ *  Creates an inverted gene from the receiver by swapping the source and receiving traits and reversing the transformer if set.
+ *
+ *  @note This method will return nil if the receiver cannot be inverted.
+ *
+ *  @see canInvertGene
+ *
+ *  @return An inverted copy of the receiver.
+ */
+- (instancetype)invertedGene;
 
 @end
 
