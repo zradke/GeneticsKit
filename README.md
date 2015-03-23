@@ -80,26 +80,26 @@ different genes into an array and use that as a new genome!
 
 The driving force behind GeneticsKit are two protocols: `GNKSourceTrait` and `GNKReceivngTrait`. These two protocols make up the designated initializer for `GNKGene`. To mask some of the implementation drudgery, GeneticsKit provides a bunch of functions to quickly make conforming trait objects.
 
-Function | Protocol | Description
-- | - | -
-`GNKKeyTrait(key)` | `GNKReceivingTrait` | Uses key-value coding to get and set trait values
-`GNKIndexTrait(index)` | `GNKReceivingTrait` | Uses index accessors to get and set trait values
-`GNKSequenceTrait(traits)` | `GNKReceivingTrait` | Iterates each of the sub-traits in sequence to get a trait value, and does the same for setting trait values.
-`GNKAggregateTrait(traits)` | `GNKSourceTrait` | Gets multiple trait values and aggregates them into a dictionary with the traits as keys.
-`GNKIdentityTrait()` | `GNKSourceTrait` | Simple trait which returns the given object as its trait value.
+| Function | Protocol | Description |
+| --- | --- | --- |
+| `GNKKeyTrait(key)` | `GNKReceivingTrait` | Uses key-value coding to get and set trait values. |
+| `GNKIndexTrait(index)` | `GNKReceivingTrait` | Uses index accessors to get and set trait values. |
+| `GNKSequenceTrait(traits)` | `GNKReceivingTrait` | Iterates each of the sub-traits in sequence to get a trait value, and does the same for setting trait values. |
+| `GNKAggregateTrait(traits)` | `GNKSourceTrait` | Gets multiple trait values and aggregates them into a dictionary with the traits as keys. |
+| `GNKIdentityTrait()` | `GNKSourceTrait` | Simple trait which returns the given object as its trait value. |
 
 Additionally, some Foundation classes have been extended to conform to the `GNKSourceTraitConvertible` and `GNKReceivingTraitConvertible` protocols.
 
-Foundation class | Protocols | Description
-- | - | -
-`NSString` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the string into either a single `GNKKeyTrait` or a `GNKSequenceTrait`.
-`NSNumber` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the number into a `GNKIndexTrait`.
-`NSIndexPath` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the index path into a `GNKSequenceTrait` of `GNKIndexTrait` objects.
-`NSArray` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the array into a `GNKSequenceTrait`.
-`NSOrderedSet` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the ordered set to a `GNKSequenceTrait`
-`NSIndexSet` | `GNKSourceTraitConvertible` | Converts the index set into a `GNKAggregateTrait` of `GNKIndexTrait` objects.
-`NSSet` | `GNKSourceTraitConvertible` | Converts the set into a `GNKAggregateTrait`.
-`NSNull` | `GNKSourceTraitConvertible` | Equivalent to `GNKIdentityTrait`.
+| Foundation class | Protocols | Description |
+| --- | --- | --- |
+| `NSString` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the string into either a single `GNKKeyTrait` or a `GNKSequenceTrait`. |
+| `NSNumber` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the number into a `GNKIndexTrait`. |
+| `NSIndexPath` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the index path into a `GNKSequenceTrait` of `GNKIndexTrait` objects. |
+| `NSArray` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the array into a `GNKSequenceTrait`. |
+| `NSOrderedSet` | `GNKSourceTraitConvertible`, `GNKReceivingTraitConvertible` | Converts the ordered set to a `GNKSequenceTrait`. |
+| `NSIndexSet` | `GNKSourceTraitConvertible` | Converts the index set into a `GNKAggregateTrait` of `GNKIndexTrait` objects. |
+| `NSSet` | `GNKSourceTraitConvertible` | Converts the set into a `GNKAggregateTrait`. |
+| `NSNull` | `GNKSourceTraitConvertible` | Equivalent to `GNKIdentityTrait`. |
 
 ## Why to all
 
