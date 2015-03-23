@@ -85,15 +85,15 @@ NSSet *GNKLabGenesWithDifferentTraits(id source, id receiver, NSArray *genome, G
 }
 
 
-@interface NSObject (GeneticsKit)
+@interface GNKGene (GeneticsKit)
 
-- (void)GNKDummyMethod;
+- (void)_GNKDummyMethod;
 
 @end
 
-@implementation NSObject (GeneticsKit)
+@implementation GNKGene (GeneticsKit)
 
-- (void)GNKDummyMethod
+- (void)_GNKDummyMethod
 {
     // Nothing... for some reason, the arm64 compiler won't compile this file properly unless it has an implementation.
 }
