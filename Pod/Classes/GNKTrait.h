@@ -11,7 +11,7 @@
 /**
  *  Protocol which conformers adopt to indicate that they can get a specific trait value from an arbitrary object. Note that conformers of this protocol must also conform to NSCopying. Traits should also have meaningful -isEqual: methods.
  *
- *  See GNKIndexTrait, GNKKeyTrait, GNKSequenceTrait, GNKAggregateTrait, and GNKIdentity trait for examples of conformers.
+ *  @see GNKTrait
  */
 @protocol GNKSourceTrait <NSCopying>
 @required
@@ -31,7 +31,7 @@
 /**
  *  Protocol which conformers adopt to indicate that they can set an arbitrary trait value on an arbitrary object. Note that conformers of this protocol must also conform to GNKSourceTrait.
  *
- *  See GNKIndexTrait, GNKKeyTrait, and GNKSequenceTrait for examples of conformers.
+ *  @see GNKTrait
  */
 @protocol GNKReceivingTrait <GNKSourceTrait>
 @required
@@ -79,10 +79,47 @@
 @end
 
 
-#pragma mark - Trait functions
+/**
+ *  Class cluster of GNKSourceTrait and GNKReceiving trait conformers.
+ *
+ *  Because GNKTrait is a class cluster, it should not be initialized directly via its +new or -init methods, but instead through the exposed class methods.
+ */
+@interface GNKTrait : NSObject
 
 /**
- *  Creates a GNKReceivingTrait conforming object which represents a specific index. This trait can be used to retrieve a value at the given index from an arbitrary object, or set a value at the given index for an arbitrary object.
+ *  Creates a basic trait conforming object which will simply echo given objects as trait values.
+ *
+ *  This can be useful along with a transformer when the other basic traits are not suitable.
+ *
+ *  @return A GNKSourceTrait conforming object which represents the identity of any object.
+ */
++ (id<GNKSourceTrait>)identityTrait;
+
+/**
+ *  Creates a trait which aggregates all trait values into a single dictionary.
+ *
+ *  Although an array of traits is passed, the order of the traits is irrelevant. When getting a trait value, the trait will query each of its sub-traits to get their trait values from the passed object, then combine them into a dictionary where the keys are the traits and the values their corresponding returned values. Note that because of this, if a sub-trait returns `nil`, it is excluded from the returned aggregate dictionary.
+ *
+ *  @param traits An array of GNKSourceTrait conforming objects. This must contain at least one object.
+ *
+ *  @return A GNKSourceTrait conforming object which simultaneously represents all the given traits.
+ */
++ (id<GNKSourceTrait>)aggregateOfTraits:(NSArray *)traits __attribute((nonnull));
+
+/**
+ *  Creates a trait which represents a specific key-value coding key-path. This trait can be used to retrieve a value for the given key-path from an arbitrary object, or set a value at the given key-path on an arbitrary object.
+ *
+ *  Example source object: NSDictionary
+ *  Example receiving object: NSMutableDictionary
+ *
+ *  @param key The key-path that the trait should represent. This must not be nil.
+ *
+ *  @return A GNKReceivingTrait conforming object which represents the given key-path.
+ */
++ (id<GNKReceivingTrait>)traitWithKey:(NSString *)key __attribute((nonnull));
+
+/**
+ *  Creates a trait which represents a specific index. This trait can be used to retrieve a value at the given index from an arbitrary object, or set a value at the given index for an arbitrary object.
  *
  *  This trait's implementation of GNKSourceTrait and GNKReceivingTrait attempts "nice" value getting and setting. If the passed object responds to the -count method, that will first be checked to ensure the trait's index is represented, and return `nil` if not. Similarly, while setting, if the passed object responds to -count, the difference between the count and the trait's index will be populated with `[NSNull null]` to avoid throwing exceptions.
  *
@@ -93,22 +130,10 @@
  *
  *  @return A GNKReceivingTrait conforming object which represents the given index.
  */
-FOUNDATION_EXPORT id<GNKReceivingTrait> GNKIndexTrait(NSInteger index);
++ (id<GNKReceivingTrait>)traitWithIndex:(NSInteger)index;
 
 /**
- *  Creates a GNKReceivingTrait conforming object which represents a specific key-value coding key-path. This trait can be used to retrieve a value for the given key-path from an arbitrary object, or set a value at the given key-path on an arbitrary object.
- *
- *  Example source object: NSDictionary
- *  Example receiving object: NSMutableDictionary
- *
- *  @param key The key-path that the trait should represent. This must not be nil.
- *
- *  @return A GNKReceivingTrait conforming object which represents the given key-path.
- */
-FOUNDATION_EXPORT id<GNKReceivingTrait> GNKKeyTrait(NSString *key);
-
-/**
- *  Creates a GNKReceivingTrait conforming object which follows a sequence of other traits to get and set values.
+ *  Creates a trait which follows a sequence of other traits to get and set values.
  *
  *  When getting a trait value, each trait in the traits array is enumerated, with the returned value of one trait becoming the object for the next trait. Similarly, when setting a trait value, all but the last trait in the traits array are enumerated to acquire the an object which is passed to the final trait along with the requested trait value. Because of this, only the final trait must conform to GNKReceivingTrait. All other objects need only conform to GNKSourceTrait.
  *
@@ -116,24 +141,6 @@ FOUNDATION_EXPORT id<GNKReceivingTrait> GNKKeyTrait(NSString *key);
  *
  *  @return A GNKReceivingTrait conforming object which represents a sequence of other traits.
  */
-FOUNDATION_EXPORT id<GNKReceivingTrait> GNKSequenceTrait(NSArray *traits);
++ (id<GNKReceivingTrait>)sequenceOfTraits:(NSArray *)traits __attribute((nonnull));
 
-/**
- *  Creates a GNKSourceTrait conforming object which aggregates all trait values into a single dictionary.
- *
- *  Although an array of traits is passed, the order of the traits is irrelevant. When getting a trait value, the trait will query each of its sub-traits to get their trait values from the passed object, then combine them into a dictionary where the keys are the traits and the values their corresponding returned values. Note that because of this, if a sub-trait returns `nil`, it is excluded from the returned aggregate dictionary.
- *
- *  @param traits An array of GNKSourceTrait conforming objects. This must contain at least one object.
- *
- *  @return A GNKSourceTrait conforming object which simultaneously represents all the given traits.
- */
-FOUNDATION_EXPORT id<GNKSourceTrait> GNKAggregateTrait(NSArray *traits);
-
-/**
- *  Creates a basic GNKSourceTrait conforming object which will simply echo given objects as trait values.
- *
- *  This can be useful along with a transformer when the other basic traits are not suitable.
- *
- *  @return A GNKSource trait conforming object which represents the identity of any object.
- */
-FOUNDATION_EXPORT id<GNKSourceTrait> GNKIdentityTrait();
+@end

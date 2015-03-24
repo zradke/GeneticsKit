@@ -23,7 +23,9 @@
 
 #pragma mark - API
 
-- (instancetype)initWithSourceTrait:(id<GNKSourceTrait>)sourceTrait receivingTrait:(id<GNKReceivingTrait>)receivingTrait transformer:(NSValueTransformer *)transformer
+- (instancetype)initWithSourceTrait:(id<GNKSourceTrait>)sourceTrait
+                     receivingTrait:(id<GNKReceivingTrait>)receivingTrait
+                        transformer:(NSValueTransformer *)transformer
 {
     NSParameterAssert(sourceTrait);
     NSParameterAssert(receivingTrait);
@@ -40,11 +42,14 @@
     return self;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 - (instancetype)init
 {
     [self doesNotRecognizeSelector:_cmd];
-    return [self initWithSourceTrait:nil receivingTrait:nil transformer:nil];
+    return nil;
 }
+#pragma clang diagnostic pop
 
 - (BOOL)isEqualToGene:(GNKGene *)gene
 {
@@ -81,7 +86,7 @@
 
 - (NSString *)description
 {
-    NSMutableString *description = [NSMutableString stringWithFormat:@"<%@:%p> %@ ==> %@", [self class], self, self.sourceTrait, self.receivingTrait];
+    NSMutableString *description = [NSMutableString stringWithFormat:@"%@ ==> %@", self.sourceTrait, self.receivingTrait];
     if (self.transformer)
     {
         [description appendFormat:@" (transformer: %@)", self.transformer];
@@ -157,7 +162,8 @@
 
 @end
 
-void GNKPopulateGeneArgs(id arg, id __autoreleasing *sourceTrait, id __autoreleasing *receivingTrait, NSValueTransformer *__autoreleasing *transformer)
+
+static void GNKPopulateGeneArgs(id arg, id __autoreleasing *sourceTrait, id __autoreleasing *receivingTrait, NSValueTransformer *__autoreleasing *transformer)
 {
     NSCParameterAssert(sourceTrait);
     NSCParameterAssert(receivingTrait);

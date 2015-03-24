@@ -37,7 +37,7 @@
     NSArray *genome = @[GNKMakeGene(@"keyA", 0),
                         GNKMakeGene(@"keyC", 2)];
     
-    GNKLabTransferTraits(objA, objB, genome, 0);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:0];
     
     XCTAssertEqual(objB.count, 3);
     XCTAssertEqualObjects(objB[0], @"A");
@@ -55,7 +55,7 @@
     NSArray *genome = @[GNKMakeGene(@"keyA", 0, [GNKUppercaseTransformer new]),
                         GNKMakeGene(@"keyC", 2)];
     
-    GNKLabTransferTraits(objA, objB, genome, 0);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:0];
     
     XCTAssertEqual(objB.count, 3);
     XCTAssertEqualObjects(objB[0], @"A");
@@ -76,11 +76,11 @@
     
     NSArray *genome = @[GNKMakeGene(@selector(keyB))];
     
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertEqualObjects(objB.keyB, @"B");
     
     options = GNKLabUseNilValues;
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertNil(objB.keyB);
     
 }
@@ -98,11 +98,11 @@
     
     NSArray *genome = @[GNKMakeGene(@selector(keyC), [GNKNilNullTransformer new])];
     
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertEqualObjects(objB.keyC, @"<NIL>");
     
     options = GNKLabSkipPreTranformationNilConversion;
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertEqualObjects(objB.keyC, @"<NULL>");
 }
 
@@ -119,11 +119,11 @@
     
     NSArray *genome = @[GNKMakeGene(@selector(keyC), [NSValueTransformer new])];
     
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertEqualObjects(objB.keyC, [NSNull null]);
     
     options = GNKLabUseNilValues | GNKLabSkipPreSettingNilConversion | GNKLabSkipPostTranformationNullConversion;
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertNil(objB.keyC);
 }
 
@@ -140,11 +140,11 @@
     
     NSArray *genome = @[GNKMakeGene(@selector(keyC))];
     
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertNil(objB.keyC);
     
     options = GNKLabSkipPreSettingNilConversion;
-    GNKLabTransferTraits(objA, objB, genome, options);
+    [GNKLab transferTraitsFromSource:objA receiver:objB genome:genome options:options];
     XCTAssertEqual(objB.keyC, (id)[NSNull null]);
 }
 
@@ -160,7 +160,7 @@
                         GNKMakeGene(@"keyB", 1),
                         GNKMakeGene(@"keyC", 2)];
     
-    NSSet *genes = GNKLabGenesWithDifferentTraits(objA, objB, genome, 0);
+    NSSet *genes = [GNKLab findGenesWithDifferentTraitsFromSource:objA receiver:objB genome:genome options:0];
     
     XCTAssertEqual(genes.count, 1);
     XCTAssertEqualObjects([genes anyObject], GNKMakeGene(@"keyB", 1));
@@ -179,7 +179,7 @@
                         GNKMakeGene(@"keyB", 1, transformer),
                         GNKMakeGene(@"keyC", 2, transformer)];
     
-    NSSet *genes = GNKLabGenesWithDifferentTraits(objA, objB, genome, 0);
+    NSSet *genes = [GNKLab findGenesWithDifferentTraitsFromSource:objA receiver:objB genome:genome options:0];
     
     XCTAssertEqual(genes.count, 1);
     XCTAssertEqualObjects([genes anyObject], GNKMakeGene(@"keyB", 1, transformer));
@@ -197,7 +197,7 @@
                         GNKMakeGene(@"keyB", 1),
                         GNKMakeGene(@"keyC", 2)];
     
-    NSSet *genes = GNKLabGenesWithDifferentTraits(objA, objB, genome, 0);
+    NSSet *genes = [GNKLab findGenesWithDifferentTraitsFromSource:objA receiver:objB genome:genome options:0];
     
     XCTAssertNotNil(genes);
     XCTAssertEqual(genes.count, 0);
@@ -216,7 +216,7 @@
                         GNKMakeGene(@"keyB", 1, transformer),
                         GNKMakeGene(@"keyC", 2, transformer)];
     
-    NSSet *genes = GNKLabGenesWithDifferentTraits(objA, objB, genome, 0);
+    NSSet *genes = [GNKLab findGenesWithDifferentTraitsFromSource:objA receiver:objB genome:genome options:0];
     
     XCTAssertNotNil(genes);
     XCTAssertEqual(genes.count, 0);

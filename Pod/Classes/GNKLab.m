@@ -34,11 +34,13 @@ static id GNKTraitValue(id object, id<GNKSourceTrait> trait, NSValueTransformer 
     return value;
 }
 
-void GNKLabTransferTraits(id source, id receiver, NSArray *genome, GNKLabOptions options)
+@implementation GNKLab
+
++ (void)transferTraitsFromSource:(id)source receiver:(id)receiver genome:(NSArray *)genome options:(GNKLabOptions)options
 {
-    NSCParameterAssert(source);
-    NSCParameterAssert(receiver);
-    NSCParameterAssert(genome.count > 0);
+    NSParameterAssert(source);
+    NSParameterAssert(receiver);
+    NSParameterAssert(genome.count > 0);
     
     NSOrderedSet *genomeCopy = [NSOrderedSet orderedSetWithArray:genome];
     
@@ -59,11 +61,11 @@ void GNKLabTransferTraits(id source, id receiver, NSArray *genome, GNKLabOptions
     }
 }
 
-NSSet *GNKLabGenesWithDifferentTraits(id source, id receiver, NSArray *genome, GNKLabOptions options)
++ (NSSet *)findGenesWithDifferentTraitsFromSource:(id)source receiver:(id)receiver genome:(NSArray *)genome options:(GNKLabOptions)options
 {
-    NSCParameterAssert(source);
-    NSCParameterAssert(receiver);
-    NSCParameterAssert(genome.count > 0);
+    NSParameterAssert(source);
+    NSParameterAssert(receiver);
+    NSParameterAssert(genome.count > 0);
     
     NSSet *genomeCopy = [NSSet setWithArray:genome];
     NSMutableSet *differentGenes = [NSMutableSet set];
@@ -84,18 +86,10 @@ NSSet *GNKLabGenesWithDifferentTraits(id source, id receiver, NSArray *genome, G
     return [differentGenes copy];
 }
 
-
-@interface GNKGene (GeneticsKit)
-
-- (void)_GNKDummyMethod;
-
-@end
-
-@implementation GNKGene (GeneticsKit)
-
-- (void)_GNKDummyMethod
+- (instancetype)init
 {
-    // Nothing... for some reason, the arm64 compiler won't compile this file properly unless it has an implementation.
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
 }
 
 @end

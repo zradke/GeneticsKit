@@ -23,15 +23,15 @@
 
 - (void)testInit
 {
-    GNKGene *gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:nil];
+    GNKGene *gene = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:nil];
     XCTAssertNotNil(gene);
 }
 
 - (void)testEquality
 {
-    GNKGene *geneA = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:nil];
-    GNKGene *geneB = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:nil];
-    GNKGene *geneC = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"B") transformer:nil];
+    GNKGene *geneA = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:nil];
+    GNKGene *geneB = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:nil];
+    GNKGene *geneC = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"B"] transformer:nil];
     
     XCTAssertEqualObjects(geneA, geneB);
     XCTAssertFalse([geneA isEqual:geneC]);
@@ -40,31 +40,31 @@
 
 - (void)testCanInvertGene
 {
-    GNKGene *gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:nil];
+    GNKGene *gene = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:nil];
     
     XCTAssertTrue([gene canInvertGene]);
     
-    gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:[GNKTestReversibleTransformer new]];
+    gene = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:[GNKTestReversibleTransformer new]];
     
     XCTAssertTrue([gene canInvertGene]);
     
-    gene = [[GNKGene alloc] initWithSourceTrait:GNKIdentityTrait() receivingTrait:GNKKeyTrait(@"A") transformer:nil];
+    gene = [[GNKGene alloc] initWithSourceTrait:[GNKTrait identityTrait] receivingTrait:[GNKTrait traitWithKey:@"A"] transformer:nil];
     
     XCTAssertFalse([gene canInvertGene]);
     
-    gene = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:[GNKTestOneWayTransformer new]];
+    gene = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:[GNKTestOneWayTransformer new]];
     
     XCTAssertFalse([gene canInvertGene]);
 }
 
 - (void)testInvertedGene
 {
-    GNKGene *geneA = [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"A") receivingTrait:GNKKeyTrait(@"A'") transformer:[GNKTestReversibleTransformer new]];
+    GNKGene *geneA = [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"A"] receivingTrait:[GNKTrait traitWithKey:@"A'"] transformer:[GNKTestReversibleTransformer new]];
     
     NSDictionary *sourceA = @{@"A": @"http://www.google.com"};
     NSMutableDictionary *receiverA = [NSMutableDictionary dictionary];
     
-    GNKLabTransferTraits(sourceA, receiverA, @[geneA], 0);
+    [GNKLab transferTraitsFromSource:sourceA receiver:receiverA genome:@[geneA] options:0];
     
     NSDictionary *sourceB = @{@"A'": [NSURL URLWithString:@"http://www.google.com"]};
     XCTAssertEqualObjects(receiverA, sourceB);
@@ -75,7 +75,7 @@
     
     NSMutableDictionary *receiverB = [NSMutableDictionary dictionary];
     
-    GNKLabTransferTraits(sourceB, receiverB, @[geneB], 0);
+    [GNKLab transferTraitsFromSource:sourceB receiver:receiverB genome:@[geneB] options:0];
     
     XCTAssertEqualObjects(receiverB, sourceA);
 }
@@ -87,8 +87,8 @@
 {
     GNKGene *gene = GNKMakeGene(@"keyA");
     
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
     XCTAssertNil(gene.transformer);
 }
 
@@ -96,21 +96,21 @@
 {
     GNKGene *gene = GNKMakeGene(@"keyA", @"keyB");
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyB"));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyB"]);
     XCTAssertNil(gene.transformer);
     
     NSValueTransformer *transformer = [NSValueTransformer new];
     gene = GNKMakeGene(@"keyA", transformer);
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyA"));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyA"]);
     XCTAssertEqualObjects(gene.transformer, transformer);
     
     gene = GNKMakeGene(transformer, @"keyA");
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyA"));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyA"]);
     XCTAssertEqualObjects(gene.transformer, transformer);
 }
 
@@ -119,20 +119,20 @@
     NSValueTransformer *transformer = [NSValueTransformer new];
     GNKGene *gene = GNKMakeGene(@"keyA", @"keyB", transformer);
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyB"));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyB"]);
     XCTAssertEqualObjects(gene.transformer, transformer);
     
     gene = GNKMakeGene(transformer, @"keyA", @"keyB");
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyB"));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyB"]);
     XCTAssertEqualObjects(gene.transformer, transformer);
     
     gene = GNKMakeGene(@"keyA", transformer, @"keyB");
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"keyA"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKKeyTrait(@"keyB"));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"keyA"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithKey:@"keyB"]);
     XCTAssertEqualObjects(gene.transformer, transformer);
 }
 
@@ -140,8 +140,8 @@
 {
     GNKGene *gene = GNKMakeGene(@selector(key), 9);
     
-    XCTAssertEqualObjects(gene.sourceTrait, GNKKeyTrait(@"key"));
-    XCTAssertEqualObjects(gene.receivingTrait, GNKIndexTrait(9));
+    XCTAssertEqualObjects(gene.sourceTrait, [GNKTrait traitWithKey:@"key"]);
+    XCTAssertEqualObjects(gene.receivingTrait, [GNKTrait traitWithIndex:9]);
 }
 
 @end

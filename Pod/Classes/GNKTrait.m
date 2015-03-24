@@ -8,15 +8,15 @@
 
 #import "GNKTrait.h"
 
-@interface _GNKIndexTrait : NSObject <GNKReceivingTrait>
+@interface _GNKIndexTrait : GNKTrait <GNKReceivingTrait>
 
-- (instancetype)initWithIndex:(NSUInteger)index;
+- (instancetype)initWithIndex:(NSInteger)index;
 
-@property (assign, nonatomic, readonly) NSUInteger index;
+@property (assign, nonatomic, readonly) NSInteger index;
 
 @end
 
-@interface _GNKKeyTrait : NSObject <GNKReceivingTrait>
+@interface _GNKKeyTrait : GNKTrait <GNKReceivingTrait>
 
 - (instancetype)initWithKey:(NSString *)key;
 
@@ -24,7 +24,7 @@
 
 @end
 
-@interface _GNKSequenceTrait : NSObject <GNKReceivingTrait>
+@interface _GNKSequenceTrait : GNKTrait <GNKReceivingTrait>
 
 - (instancetype)initWithSequence:(NSArray *)traits;
 
@@ -32,7 +32,7 @@
 
 @end
 
-@interface _GNKAggregateTrait : NSObject <GNKSourceTrait>
+@interface _GNKAggregateTrait : GNKTrait <GNKSourceTrait>
 
 - (instancetype)initWithTraits:(NSSet *)traits;
 
@@ -40,7 +40,7 @@
 
 @end
 
-@interface _GNKIdentityTrait : NSObject <GNKSourceTrait>
+@interface _GNKIdentityTrait : GNKTrait <GNKSourceTrait>
 
 + (instancetype)sharedTrait;
 
@@ -49,37 +49,56 @@
 
 #pragma mark - Public API
 
-id<GNKSourceTrait, GNKReceivingTrait> GNKIndexTrait(NSInteger index)
+@implementation GNKTrait
+
++ (instancetype)identityTrait
 {
-    return [[_GNKIndexTrait alloc] initWithIndex:index];
+    return [_GNKIdentityTrait sharedTrait];
 }
 
-id<GNKSourceTrait, GNKReceivingTrait> GNKKeyTrait(NSString *key)
-{
-    return [[_GNKKeyTrait alloc] initWithKey:key];
-}
-
-id<GNKSourceTrait, GNKReceivingTrait> GNKSequenceTrait(NSArray *traits)
-{
-    return [[_GNKSequenceTrait alloc] initWithSequence:traits];
-}
-
-id<GNKSourceTrait> GNKAggregateTrait(NSArray *traits)
++ (instancetype)aggregateOfTraits:(NSArray *)traits
 {
     return [[_GNKAggregateTrait alloc] initWithTraits:[NSSet setWithArray:traits]];
 }
 
-id<GNKSourceTrait> GNKIdentityTrait()
++ (instancetype)traitWithKey:(NSString *)key
 {
-    return [_GNKIdentityTrait sharedTrait];
+    return [[_GNKKeyTrait alloc] initWithKey:key];
 }
+
++ (instancetype)traitWithIndex:(NSInteger)index
+{
+    return [[_GNKIndexTrait alloc] initWithIndex:index];
+}
+
++ (instancetype)sequenceOfTraits:(NSArray *)traits
+{
+    return [[_GNKSequenceTrait alloc] initWithSequence:traits];
+}
+
+- (instancetype)init
+{
+    if ([self isMemberOfClass:[GNKTrait class]])
+    {
+        [self doesNotRecognizeSelector:_cmd];
+        return nil;
+    }
+    else if (!(self = [super init]))
+    {
+        return nil;
+    }
+    
+    return self;
+}
+
+@end
 
 
 #pragma mark - GNKIndexTrait
 
 @implementation _GNKIndexTrait
 
-- (instancetype)initWithIndex:(NSUInteger)index
+- (instancetype)initWithIndex:(NSInteger)index
 {
     if (!(self = [super init]))
     {
@@ -89,6 +108,12 @@ id<GNKSourceTrait> GNKIdentityTrait()
     _index = index;
     
     return self;
+}
+
+- (instancetype)init
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
 }
 
 
@@ -176,6 +201,12 @@ id<GNKSourceTrait> GNKIdentityTrait()
     return self;
 }
 
+- (instancetype)init
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 
 #pragma mark NSObject
 
@@ -246,6 +277,12 @@ id<GNKSourceTrait> GNKIdentityTrait()
     _sequence = [traits copy];
     
     return self;
+}
+
+- (instancetype)init
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
 }
 
 
@@ -330,6 +367,12 @@ id<GNKSourceTrait> GNKIdentityTrait()
     _traits = [traits copy];
     
     return self;
+}
+
+- (instancetype)init
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
 }
 
 

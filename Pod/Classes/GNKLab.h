@@ -35,8 +35,16 @@ typedef NS_OPTIONS(NSInteger, GNKLabOptions)
     GNKLabSkipPreSettingNilConversion = 1 << 3
 };
 
+
 /**
- *  Function which transfers traits from the source object to the receiver object using the GNKGene instances that make up the genome.
+ *  Collection of utilities which operate using GNKGene objects to compare and transfer trait values.
+ *
+ *  This class is not meant to be instantiated. Subclasses can override the existing class method implementations.
+ */
+@interface GNKLab : NSObject
+
+/**
+ *  Method which transfers traits from the source object to the receiver object using the GNKGene instances that make up the genome.
  *
  *  Each GNKGene in the genome is undergoes a sequence to transfer its trait value. The exact steps vary depending on the options passed, but by default:
  *
@@ -55,10 +63,10 @@ typedef NS_OPTIONS(NSInteger, GNKLabOptions)
  *  @param genome   An array of GNKGene objects to follow for retrieving and setting values from the source to the receiver. This must contain at least one gene.
  *  @param options  A bitmask of options to use when transfering traits.
  */
-FOUNDATION_EXPORT void GNKLabTransferTraits(id source, id receiver, NSArray *genome, GNKLabOptions options);
++ (void)transferTraitsFromSource:(id)source receiver:(id)receiver genome:(NSArray *)genome options:(GNKLabOptions)options __attribute((nonnull));
 
 /**
- *  Function which compares trait values between objects and finds the genes which do not share common values.
+ *  Method which compares trait values between objects and finds the genes which do not share common values.
  *
  *  Each GNKGene in the genome is enumerated in a sequence to find and compare the trait values. The exact steps vary depending on the options passed, but by default:
  *
@@ -76,4 +84,6 @@ FOUNDATION_EXPORT void GNKLabTransferTraits(id source, id receiver, NSArray *gen
  *
  *  @return A set of GNKGene objects which have traits that did not represent equivalent values between the source and receiver.
  */
-FOUNDATION_EXPORT NSSet *GNKLabGenesWithDifferentTraits(id source, id receiver, NSArray *genome, GNKLabOptions options);
++ (NSSet *)findGenesWithDifferentTraitsFromSource:(id)source receiver:(id)receiver genome:(NSArray *)genome options:(GNKLabOptions)options __attribute((nonnull));
+
+@end

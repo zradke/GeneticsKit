@@ -36,7 +36,7 @@
             
             if (key.length > 0)
             {
-                [traits addObject:GNKKeyTrait(key)];
+                [traits addObject:[GNKTrait traitWithKey:key]];
             }
             
             NSInteger index;
@@ -45,7 +45,7 @@
                 if ([scanner scanInteger:&index] &&
                     [scanner scanString:@"]" intoString:nil])
                 {
-                    [traits addObject:GNKIndexTrait(index)];
+                    [traits addObject:[GNKTrait traitWithIndex:index]];
                 }
                 else
                 {
@@ -65,7 +65,7 @@
     }
     else
     {
-        return GNKSequenceTrait(traits);
+        return [GNKTrait sequenceOfTraits:traits];
     }
 }
 
@@ -85,7 +85,7 @@
 
 - (id)_GNKTraitValue
 {
-    return GNKIndexTrait([self integerValue]);
+    return [GNKTrait traitWithIndex:[self integerValue]];
 }
 
 @end
@@ -108,10 +108,10 @@
     
     for (NSUInteger i = 0; i < self.length; i++)
     {
-        [traits addObject:GNKIndexTrait([self indexAtPosition:i])];
+        [traits addObject:[GNKTrait traitWithIndex:[self indexAtPosition:i]]];
     }
     
-    return GNKSequenceTrait(traits);
+    return [GNKTrait sequenceOfTraits:traits];
 }
 
 @end
@@ -164,7 +164,7 @@
     }
     else
     {
-        return GNKSequenceTrait(traits);
+        return [GNKTrait sequenceOfTraits:traits];
     }
 }
 
@@ -191,10 +191,10 @@
     NSMutableArray *traits = [NSMutableArray array];
     
     [self enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-        [traits addObject:GNKIndexTrait(idx)];
+        [traits addObject:[GNKTrait traitWithIndex:idx]];
     }];
     
-    return GNKAggregateTrait(traits);
+    return [GNKTrait aggregateOfTraits:traits];
 }
 
 @end
@@ -221,7 +221,7 @@
         }
     }
     
-    return GNKAggregateTrait(traits);
+    return [GNKTrait aggregateOfTraits:traits];
 }
 
 @end
@@ -230,7 +230,7 @@
 
 - (id<GNKSourceTrait>)GNKSourceTraitValue
 {
-    return GNKIdentityTrait();
+    return [GNKTrait identityTrait];
 }
 
 @end

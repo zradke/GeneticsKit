@@ -21,18 +21,18 @@
  *  Some examples:
  *  
  *  ```
- *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKKeyTrait(@"keyA") transformer:nil];
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"keyA"] receivingTrait:[GNKTrait traitWithKey:@"keyA"] transformer:nil];
  *  GNKGene *gene = GNKMakeGene(@selector(keyA));
  *
- *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKIndexTrait(0) transformer:nil];
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"keyA"] receivingTrait:[GNKTrait traitWithIndex:0] transformer:nil];
  *  gene = GNKMakeGene(@"keyA", 0);
  *
  *  NSValueTransformer *transformer = ...;
  *
- *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKIndexTrait(0) transformer:transformer];
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"keyA"] receivingTrait:[GNKTrait traitWithIndex:0] transformer:transformer];
  *  gene = GNKMakeGene(@"keyA", @0, transformer);
  *
- *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:GNKKeyTrait(@"keyA") receivingTrait:GNKKeyTrait(@"keyA") transformer:transformer];
+ *  // Equivalent to [[GNKGene alloc] initWithSourceTrait:[GNKTrait traitWithKey:@"keyA"] receivingTrait:[GNKTrait traitWithKey:@"keyA"] transformer:transformer];
  *  gene = GNKMakeGene(@selector(keyA), transformer);
  *  ```
  */
@@ -49,7 +49,7 @@
  */
 - (instancetype)initWithSourceTrait:(id<GNKSourceTrait>)sourceTrait
                      receivingTrait:(id<GNKReceivingTrait>)receivingTrait
-                        transformer:(NSValueTransformer *)transformer NS_DESIGNATED_INITIALIZER;
+                        transformer:(NSValueTransformer *)transformer NS_DESIGNATED_INITIALIZER __attribute((nonnull (1,2)));
 
 /**
  *  The source trait used for retrieving trait values. Source values are transformed by the transformer if available.

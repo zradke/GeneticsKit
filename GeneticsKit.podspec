@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name         = "GeneticsKit"
-s.version      = "0.2.0"
+s.version      = "0.3.0"
 s.summary      = "Simple and flexible mapping for any object."
 s.homepage     = "https://github.com/zradke/GeneticsKit"
 s.license      = 'MIT'
